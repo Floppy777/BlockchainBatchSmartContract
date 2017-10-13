@@ -1,3 +1,4 @@
+package core.batch.configuration;
 import org.springframework.batch.item.ItemProcessor;
 
 public class SmartContractProcessor implements ItemProcessor<Object,Object> {
