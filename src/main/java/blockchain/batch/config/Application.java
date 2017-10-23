@@ -4,7 +4,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages="com.barley")
+@SpringBootApplication(scanBasePackages="blockchain.batch")
 @EnableBatchProcessing
 public class Application {
     public static void main(String[] args) throws Exception {

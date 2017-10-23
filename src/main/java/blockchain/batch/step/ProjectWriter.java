@@ -39,10 +39,10 @@ public class ProjectWriter implements ItemWriter<Project> {
 				ps.setFloat(4, item.getAmountWanted());
 				ps.setInt(5, item.getNbDonation());
 				ps.setDate(6, item.getUpdateAt() );
-				ps.setLong(6, item.getId());
+				ps.setLong(7, item.getId());
 			}
 		});
-		writer.setSql("UPDATE project SET name=?, address=?, amountTotal=?, amountWanted=?, nbDonation=?,updatedAt=? WHERE id=?");
+		writer.setSql("UPDATE project SET name=?, address=?, amount_total=?, amount_wanted=?, nb_donation=?,updated_at=? WHERE id=?");
 		writer.setDataSource(dataSource);	
     }
 

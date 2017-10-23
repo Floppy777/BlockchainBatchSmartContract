@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(
 		entityManagerFactoryRef = "mysqlEntityManager", 
 		transactionManagerRef = "mysqlTransactionManager", 
-		basePackages = "com.barley.batch.db"
+		basePackages = "blockchain.batch.db"
 )
 public class DbConfig {
 		

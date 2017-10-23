@@ -1,5 +1,5 @@
-package blockchain.batch.config;
 
+package blockchain.batch.config;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
