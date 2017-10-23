@@ -10,7 +10,7 @@ public class Project {
 	private Float amountTotal;
 	private Float amountWanted;
 	private Integer nbDonation;
-	private Date updateAt;
+	private Date updatedAt;
 	
 	public int getId() {
 		return id;
@@ -60,12 +60,12 @@ public class Project {
 		this.nbDonation = nbDonation;
 	}
 	
-	public Date getUpdateAt() {
-		return updateAt;
+	public Date getUpdatedAt() {
+		return updatedAt;
 	}
 
-	public void setUpdateAt(Date updateAt) {
-		this.updateAt = updateAt;
+	public void setUpdatedAt(Date updateAt) {
+		this.updatedAt = updateAt;
 	}
 
 	@Override

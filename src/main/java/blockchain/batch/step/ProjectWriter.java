@@ -2,6 +2,7 @@ package blockchain.batch.step;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,7 @@ public class ProjectWriter implements ItemWriter<Project> {
 				ps.setFloat(3,item.getAmountTotal());
 				ps.setFloat(4, item.getAmountWanted());
 				ps.setInt(5, item.getNbDonation());
-				ps.setDate(6, item.getUpdateAt() );
+				ps.setTimestamp(6, new Timestamp(item.getUpdatedAt().getTime()));
 				ps.setLong(7, item.getId());
 			}
 		});
