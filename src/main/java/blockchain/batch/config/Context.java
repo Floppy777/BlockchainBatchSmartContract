@@ -30,6 +30,7 @@ public class Context {
 		
 		public String address;
 		public String password;
+		public String file;
 		
 		public String getAddress() {
 			return address;
@@ -45,6 +46,14 @@ public class Context {
 		
 		public void setPassword(String password) {
 			this.password = password;
+		}
+		
+		public String getFile(){
+			return file;
+		}
+		
+		public void setFile(String file){
+			this.file = file;
 		}
 	}
 

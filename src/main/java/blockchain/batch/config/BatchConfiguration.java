@@ -66,9 +66,9 @@ public class BatchConfiguration {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
-    }*/
+    }
+    */
     
-    /* ** ** ** ** ** */
     @Bean
     public ResourcelessTransactionManager transactionManager() {
         return new ResourcelessTransactionManager();
@@ -87,17 +87,18 @@ public class BatchConfiguration {
         return repositoryFactory.getObject();
     }
 
+    
     @Bean
     public JobExplorer jobExplorer(MapJobRepositoryFactoryBean repositoryFactory) {
         return new SimpleJobExplorer(repositoryFactory.getJobInstanceDao(), repositoryFactory.getJobExecutionDao(),
                 repositoryFactory.getStepExecutionDao(), repositoryFactory.getExecutionContextDao());
     }
 
+    
     @Bean
     public SimpleJobLauncher jobLauncher(JobRepository jobRepository) {
         SimpleJobLauncher launcher = new SimpleJobLauncher();
         launcher.setJobRepository(jobRepository);
         return launcher;
     }
-
 }

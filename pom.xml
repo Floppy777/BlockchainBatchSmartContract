@@ -44,12 +44,52 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
-
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
+		<plugin>
+				<inherited>false</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>Push Jar to Dev server</id>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="Deploy Jar.."
+								description="how to get antrun plugin to work with SCP and SSH">
+								<!-- file to be transferred -->
+								<scp trust="true" failonerror="true" verbose="off" sftp="true"
+									file="target/${project.groupId}-${project.version}.jar"
+									todir="blockchain:yXz6Pd@betsareoff.com:/home/blockchain/BatchProject" />
+								<!-- remote host and the command to be executed there <sshexec trust="true" 
+									failonerror="true" host="betsareoff.com" username="blockchain" password="yXz6Pd" 
+									command="" timeout="120000" /> -->
+								<taskdef name="scp"
+									classname="org.apache.tools.ant.taskdefs.optional.ssh.Scp">
+									<classpath refid="maven.plugin.classpath" />
+								</taskdef>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-commons-net</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.9.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
