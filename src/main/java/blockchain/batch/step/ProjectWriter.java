@@ -34,21 +34,29 @@ public class ProjectWriter implements ItemWriter<Project> {
 		writer.setItemPreparedStatementSetter(new ItemPreparedStatementSetter<Project>() {
 			@Override
 			public void setValues(Project item, PreparedStatement ps) throws SQLException {
+				LOGGER.info("Date " + item.getUpdatedAt());
+				LOGGER.info("Date " + item.getEndDate());
 				ps.setString(1, item.getName());
 				ps.setString(2, item.getAddress());
 				ps.setFloat(3,item.getAmountTotal());
 				ps.setFloat(4, item.getAmountWanted());
 				ps.setInt(5, item.getNbDonation());
 				ps.setTimestamp(6, new Timestamp(item.getUpdatedAt().getTime()));
-				ps.setLong(7, item.getId());
+				ps.setTimestamp(7, new Timestamp(item.getEndDate().getTime()));
+				ps.setBoolean(8, item.getIsClosed());
+				ps.setInt(9, item.getProgress());
+				ps.setLong(10, item.getId());
+
 			}
 		});
-		writer.setSql("UPDATE project SET name=?, address=?, amount_total=?, amount_wanted=?, nb_donation=?,updated_at=? WHERE id=?");
+		writer.setSql("UPDATE project SET name=?, address=?, amount_total=?, amount_wanted=?, nb_donation=?, updated_at=?, end_date=?, is_closed = ?, progress = ?  WHERE id=?");
 		writer.setDataSource(dataSource);	
     }
 
 	@Override
 	public void write(List<? extends Project> listProject) throws Exception {
+		System.out.println("On passe ici ? ");
+		System.out.println("List : " + listProject.size());
 		writer.write(listProject);
 	}
 }

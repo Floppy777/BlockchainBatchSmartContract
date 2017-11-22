@@ -4,14 +4,18 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Wallet;
@@ -38,6 +42,13 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
 	private Context context;
 	
 	private Credentials credentials ;
+	
+	@Autowired 
+	private DataSource datasource;
+	
+	private JdbcTemplate jdbc;
+	
+	private Date nowDate = new Date(Calendar.getInstance().getTimeInMillis());
 
 	// Permet de gerer les nombres négatifs
 	private static final BigInteger TWO_COMPL_REF = BigInteger.ONE.shiftLeft(64);
@@ -50,7 +61,7 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
     
     @PostConstruct
     public void initialize() throws Exception {
-    	//JdbcTemplate jdbc = new JdbcTemplate(datasource);
+       JdbcTemplate jdbc = new JdbcTemplate(datasource);
        LOGGER.info("File UTC : " + context.getAccount().getFile());
        File utcFile = new File(context.getAccount().getFile());
        WalletFile walletFile = mapper.readValue(utcFile,WalletFile.class);
@@ -62,7 +73,7 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
     @Override
     public Project process(Project item) throws Exception {
     	
-        LOGGER.info("Processing Record: {}", item);
+    	/** Condition d'erreur **/
         if(item == null){
         	LOGGER.info("EXIT item NULL ");
         	return null;
@@ -72,29 +83,43 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
         	return null;
         }
      
-     
-        ProjectSmartContract contract = ProjectSmartContract.load(item.getAddress(), web3, credentials,new BigInteger("20000"),new BigInteger("700000"));
-        LOGGER.info("Contract : " + contract);
-        
-        BigInteger amountTotal = parseBigIntegerPositive(contract.getAmount().get().getValue());
-        Integer amountWanted = contract.getAmountWanted().get().getValue().intValue();
-        Integer nbDonation = contract.getNbDonationTotal().get().getValue().intValue();
-        
-        
-        LOGGER.info("Amount Total : " + amountTotal);
-        LOGGER.info("Nb donation" + nbDonation);
-        LOGGER.info("Amount Wanted : " + amountWanted);
-        BigDecimal amountTotalPositive = Convert.fromWei(new BigDecimal(amountTotal), Convert.Unit.ETHER);
-        LOGGER.info("Eth : " + amountTotalPositive);
-        LOGGER.info("Eth : " + amountTotalPositive.floatValue());
-                
-        item.setAmountTotal((float) amountTotalPositive.floatValue());
-        item.setAmountWanted((float) amountWanted);
-        item.setNbDonation(nbDonation);
-        item.setUpdatedAt(new Date(Calendar.getInstance().getTimeInMillis()));
-       
-        return item;
-    }
+        try {
+        	ProjectSmartContract contract = ProjectSmartContract.load(item.getAddress(), web3, credentials,new BigInteger("20000"),new BigInteger("700000"));            
+            BigInteger amountTotal = parseBigIntegerPositive(contract.getAmount().get().getValue());
+            Integer amountWanted = contract.getAmountWanted().get().getValue().intValue();
+            Integer nbDonation = contract.getNbDonationTotal().get().getValue().intValue();
+            
+            
+            LOGGER.info("Amount Total : " + amountTotal);
+            LOGGER.info("Nb donation : " + nbDonation);
+            LOGGER.info("Amount Wanted : " + amountWanted);
+            BigDecimal amountTotalPositive = Convert.fromWei(new BigDecimal(amountTotal), Convert.Unit.ETHER);
+            LOGGER.info("Eth : " + amountTotalPositive);
+            LOGGER.info("Eth : " + amountTotalPositive.floatValue());
+            LOGGER.info("Int " + contract.getDuration().get().getValue().intValue());
+            LOGGER.info("Indo : " + (float)amountTotalPositive.floatValue() * 100 );
+            LOGGER.info("Indo : " + (float)amountTotalPositive.floatValue() * 100 / amountWanted);
+            Timestamp t = Timestamp.from(Instant.ofEpochSecond(contract.getDuration().get().getValue().intValue()));
+            LOGGER.info("TimeStamp : " + t);
+            LOGGER.info("Date : " + new Date(t.getTime()));
+            item.setAmountTotal((float) amountTotalPositive.floatValue());
+            item.setAmountWanted((float) amountWanted);
+            item.setNbDonation(nbDonation);
+            item.setUpdatedAt(new Date(Calendar.getInstance().getTimeInMillis()));
+            item.setEndDate(new Date(t.getTime()));
+            item.setProgress(amountTotalPositive.intValue() * 100 / amountWanted);
+            
+        	if(item.getEndDate() != null && item.getEndDate().before(nowDate)){
+        		item.setIsClosed(true);
+        	}
+        	
+        	LOGGER.info("Item : " + item);
+            return item;	
+        } catch (NullPointerException e){
+        	//e.printStackTrace();
+        	return null;
+        }
+    }    
     
     private BigInteger parseBigIntegerPositive(BigInteger  b) {
         if (b.compareTo(BigInteger.ZERO) < 0)

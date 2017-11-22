@@ -27,10 +27,9 @@ public class ProjectReader implements ItemReader<Project> {
 	@Autowired
 	private DataSource datasource;
 
-	
 	@PostConstruct
 	public void initialize() {
-		reader.setSql("SELECT id, name, address FROM project");
+		reader.setSql("SELECT id, name, address, end_date, is_closed FROM project WHERE is_closed = false");
 		reader.setDataSource(datasource);
 		reader.setFetchSize(1);
 		reader.setRowMapper((ResultSet resultSet, int rowNum) -> {
@@ -39,6 +38,8 @@ public class ProjectReader implements ItemReader<Project> {
 				p.setId(resultSet.getInt(1));
 				p.setName(resultSet.getString(2));
 				p.setAddress(resultSet.getString(3));
+				p.setEndDate(resultSet.getDate(4));
+				p.setIsClosed(resultSet.getBoolean(5));
 				LOGGER.info("OBJECT : " + p);
 				return p;
 			} else {

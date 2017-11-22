@@ -11,6 +11,9 @@ public class Project {
 	private Float amountWanted;
 	private Integer nbDonation;
 	private Date updatedAt;
+	private Date endDate;
+	private Boolean isClosed;
+	private Integer progress;
 	
 	public int getId() {
 		return id;
@@ -68,10 +71,34 @@ public class Project {
 		this.updatedAt = updateAt;
 	}
 
+	public Boolean getIsClosed() {
+		return isClosed;
+	}
+
+	public void setIsClosed(Boolean isClosed) {
+		this.isClosed = isClosed;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+
 	@Override
 	public String toString() {
 		return "Project [id=" + id + ", name=" + name + ", address=" + address + ", amountTotal=" + amountTotal
-				+ ", amountWanted=" + amountWanted + ", nbDonation=" + nbDonation + "]";
+				+ ", amountWanted=" + amountWanted + ", nbDonation=" + nbDonation + ", updatedAt=" + updatedAt
+				+ ", endDate=" + endDate + ", isClosed=" + isClosed + ", progress=" + progress + "]";
 	}
-	
 }
