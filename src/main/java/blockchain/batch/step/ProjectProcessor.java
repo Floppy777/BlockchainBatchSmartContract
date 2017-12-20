@@ -85,8 +85,9 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
      
         try {
         	ProjectSmartContract contract = ProjectSmartContract.load(item.getAddress(), web3, credentials,new BigInteger("20000"),new BigInteger("700000"));            
-            BigInteger amountTotal = parseBigIntegerPositive(contract.getAmount().get().getValue());
-            Integer amountWanted = contract.getAmountWanted().get().getValue().intValue();
+            BigInteger amountTotal = parseBigIntegerPositive(contract.getAmountEther().get().getValue());
+            
+            BigInteger amountWanted = parseBigIntegerPositive(contract.getAmountWanted().get().getValue());
             Integer nbDonation = contract.getNbDonationTotal().get().getValue().intValue();
             
             
@@ -94,29 +95,28 @@ public class ProjectProcessor implements ItemProcessor<Project, Project> {
             LOGGER.info("Nb donation : " + nbDonation);
             LOGGER.info("Amount Wanted : " + amountWanted);
             BigDecimal amountTotalPositive = Convert.fromWei(new BigDecimal(amountTotal), Convert.Unit.ETHER);
-            LOGGER.info("Eth : " + amountTotalPositive);
+            BigDecimal amountWantedPositive = Convert.fromWei(new BigDecimal(amountWanted), Convert.Unit.ETHER);
             LOGGER.info("Eth : " + amountTotalPositive.floatValue());
-            LOGGER.info("Int " + contract.getDuration().get().getValue().intValue());
-            LOGGER.info("Indo : " + (float)amountTotalPositive.floatValue() * 100 );
-            LOGGER.info("Indo : " + (float)amountTotalPositive.floatValue() * 100 / amountWanted);
-            Timestamp t = Timestamp.from(Instant.ofEpochSecond(contract.getDuration().get().getValue().intValue()));
+            LOGGER.info("Eth Wanted : " + amountWantedPositive.floatValue());
+            LOGGER.info("Indo : " + (float)amountTotalPositive.floatValue() * 100 / amountWantedPositive.floatValue());
+            Timestamp t = Timestamp.from(Instant.ofEpochSecond(contract.getEndDate().get().getValue().intValue()));
             LOGGER.info("TimeStamp : " + t);
+            LOGGER.info("Time Pos : " + Timestamp.from(Instant.ofEpochSecond(parseBigIntegerPositive(contract.getEndDate().get().getValue()).longValue())));
             LOGGER.info("Date : " + new Date(t.getTime()));
             item.setAmountTotal((float) amountTotalPositive.floatValue());
-            item.setAmountWanted((float) amountWanted);
+            item.setAmountWanted(amountWantedPositive.floatValue());
             item.setNbDonation(nbDonation);
             item.setUpdatedAt(new Date(Calendar.getInstance().getTimeInMillis()));
             item.setEndDate(new Date(t.getTime()));
-            item.setProgress(amountTotalPositive.intValue() * 100 / amountWanted);
-            
+            item.setProgress((int)(amountTotalPositive.floatValue() * 100 / amountWanted.floatValue()));
         	if(item.getEndDate() != null && item.getEndDate().before(nowDate)){
         		item.setIsClosed(true);
         	}
-        	
+                	
         	LOGGER.info("Item : " + item);
             return item;	
         } catch (NullPointerException e){
-        	//e.printStackTrace();
+        	e.printStackTrace();
         	return null;
         }
     }    

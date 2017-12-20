@@ -29,7 +29,7 @@ public class ProjectReader implements ItemReader<Project> {
 
 	@PostConstruct
 	public void initialize() {
-		reader.setSql("SELECT id, name, address, end_date, is_closed FROM project WHERE is_closed = false");
+		reader.setSql("SELECT id, name, address, end_date, is_closed FROM project WHERE is_closed = false OR is_closed IS NULL");
 		reader.setDataSource(datasource);
 		reader.setFetchSize(1);
 		reader.setRowMapper((ResultSet resultSet, int rowNum) -> {
